@@ -1,5 +1,1 @@
-Login: admin | Password: 123
-Fullname: Admin Admin
-Phone number: 111
-PESEL: 111
--------------------------------------------------------
+admin, 123, admin, 123, 123

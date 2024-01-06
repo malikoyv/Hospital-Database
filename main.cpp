@@ -4,6 +4,7 @@
 #include <vector>
 #include <algorithm>
 #include <windows.h>
+#include <sstream>
 using namespace std;
 
 struct Visit {
@@ -35,7 +36,6 @@ void scheduleVisit(UserData& userData, const Doctor& fahrenheit, const Doctor& s
 void showInfo(const string& login, const string& password);
 void showHistory(string& login);
 void saveHistory(const UserData& userData);
-void RemoveTime(Doctor& doctor1, const string& userTypedHour);
 
 int main() {
     int userCase;
@@ -75,12 +75,13 @@ int main() {
 }
 
 bool checkData(string& login, string& password) { // create a function with the references to strings
-    file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)"); // open a file
+    file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)");
     string line;
     bool found = false;
-    while (getline(file, line)) { // reading (cin) a provided line
-        if (line.find("Login: " + login) != string::npos && line.find("Password: " + password) != string::npos) {
-            // find a line in a file that includes login and password until the end of the file
+    while (getline(file, line)) {
+        // Check if the line starts with the correct login and password
+        if (line.find(login) == 0 && line.find(password) != string::npos) {
+            // Ensure that the entire login is matched and the password is present
             found = true;
             break;
         }
@@ -94,7 +95,7 @@ bool checkLogin(string& login) {
     string line;
     bool found = false;
     while (getline(file, line)) {
-        if (line.find("Login: " + login) != string::npos) {
+        if (line.find(login) != string::npos) {
             // find a line with login until the end of the file
             found = true;
             break;
@@ -107,12 +108,7 @@ bool checkLogin(string& login) {
 void saveData(const UserData& userData) {
     // open a file in appending mode (it won't be overwritten, but add to the existed text)
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)", ios::app);
-    file << "Login: " << userData.login << " | ";
-    file << "Password: " << userData.password << endl;
-    file << "Fullname: " << userData.fullname << endl;
-    file << "Phone number: " << userData.phoneNumber << endl;
-    file << "PESEL: " << userData.pesel << endl;
-    file << "-------------------------------------------------------" << endl;
+    file << userData.login << ", " << userData.password << ", " << userData.fullname << ", " << userData.phoneNumber << ", " << userData.pesel << endl;
     file.close();
 }
 
@@ -207,7 +203,6 @@ void scheduleVisit(UserData& userData, const Doctor& fahrenheit, const Doctor& s
         visit.time = userCase;
         userData.visits.push_back(visit); // push the info about user's visit to the vector
         cout << "Appointment scheduled with Dr. " << doctorInfo.fullname << " at " << userCase << endl;
-        RemoveTime(doctorInfo, userCase);
         saveHistory(userData);
     } else {
         cout << "Time is not found for any doctor. Please make sure you entered a valid time\n";
@@ -253,37 +248,45 @@ void logInSignUp(UserData& enterUser) {
 
 void showInfo(const string& login, const string& password) {
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)");
-    string line;
+
+    vector<string> row;
+    string line, word, temp;
+
+    bool found = false;
 
     while (getline(file, line)) {
-        size_t loginPos = line.find("Login: " + login); // define a position of login
-        size_t passwordPos = line.find("Password: " + password);
-        if (loginPos != string::npos && passwordPos != string::npos) {
-            size_t pos = line.find("Login: ") + 7;  // 7 is the length of "Login: "
-            size_t endPos = line.find(" | Password: ");
-            string extractedLogin = line.substr(pos, endPos - pos); // extract password and print only login
-            cout << "Login: " << extractedLogin << endl;
-            getline(file, line);
-            cout << line << endl;  // print fullname
-            getline(file, line);
-            cout << line << endl;  // print Phone number
-            getline(file, line);
-            cout << line << endl;  // print PESEL
+        if (line.find(login) != string::npos && line.find(password) != string::npos) {
+            // Find the line with the user's login and password
+            found = true;
             break;
         }
     }
-    file.close();
-}
 
-void RemoveTime(Doctor& doctor1, const string& userTypedHour) {
-    doctor1.time.erase(
-            remove_if(
-                    doctor1.time.begin(),
-                    doctor1.time.end(),
-                    [userTypedHour](const string &doctorHour) {
-                        return doctorHour == userTypedHour;
-                    }
-            ),
-            doctor1.time.end()
-    );
+    file.close();
+
+    if (found) {
+        cout << "User Information:\n";
+
+        file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)");
+
+        while (getline(file, line)) {
+            if (line.find(login) != string::npos && line.find(password) != string::npos) {
+                // Find the line with the user's login and password
+                row.clear();
+                istringstream s(line);
+                while (getline(s, word, ','))
+                    row.push_back(word);
+
+                cout << "Login: " << row[0] << "\n"
+                     << "Full Name: " << row[2] << "\n"
+                     << "Phone Number: " << row[3] << "\n"
+                     << "PESEL: " << row[4] << "\n";
+                break;
+            }
+        }
+
+        file.close();
+    } else {
+        cout << "User not found.\n";
+    }
 }
