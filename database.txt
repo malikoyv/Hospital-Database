@@ -1,0 +1,5 @@
+Login: admin | Password: 123
+Fullname: Admin Admin
+Phone number: 111
+PESEL: 111
+-------------------------------------------------------
