@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <windows.h>
 #include <sstream>
+#include <list>
 using namespace std;
 
 struct Visit {
@@ -24,15 +25,15 @@ struct UserData {
 
 struct Doctor{
     string fullname;
-    vector<string> time;
+    list<string> time;
 };
 
 fstream file; // declare a file to read or/and write
 void logInSignUp(UserData& enterUser);
-void saveData(const UserData& userData);
+void saveData(UserData& userData);
 bool checkData(string& login, string& password);
 bool checkLogin(string& login);
-void scheduleVisit(UserData& userData, const Doctor& fahrenheit, const Doctor& somebodies, const Doctor& nowak);
+void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, Doctor& nowak);
 void showInfo(const string& login, const string& password);
 void showHistory(string& login);
 void saveHistory(const UserData& userData);
@@ -41,10 +42,12 @@ int main() {
     int userCase;
     UserData currentUser;
     logInSignUp(currentUser);
-
-    Doctor fahrenheit{"S. Fahreheit", {"7:45", "8:15", "9:30"}};
-    Doctor somebodies{"M. Somebodies", {"12:15", "14:00", "15:45"}};
-    Doctor nowak{"K. Nowak", {"18:00", "19:10", "20:05"}};
+    list<string> fahrenheitTime = {"7:45", "8:15", "9:30"};
+    list<string> somebodiesTime = {"12:15", "14:00", "15:45"};
+    list<string> nowakTime = {"18:00", "19:10", "20:05"};
+    Doctor fahrenheit{"S. Fahreheit", fahrenheitTime}; // creating an instance for doctor
+    Doctor somebodies{"M. Somebodies", somebodiesTime};
+    Doctor nowak{"K. Nowak", nowakTime};
 
     while (!cin.fail()) {
         cout << "\nWhat do you want to do?\n"
@@ -79,9 +82,8 @@ bool checkData(string& login, string& password) { // create a function with the 
     string line;
     bool found = false;
     while (getline(file, line)) {
-        // Check if the line starts with the correct login and password
-        if (line.find(login) == 0 && line.find(password) != string::npos) {
-            // Ensure that the entire login is matched and the password is present
+        // check if the line starts with the correct login and password
+        if (line.find(login + ", " + password) == 0) { // find login and password on the beginning of the line
             found = true;
             break;
         }
@@ -105,7 +107,7 @@ bool checkLogin(string& login) {
     return found;
 }
 
-void saveData(const UserData& userData) {
+void saveData(UserData& userData) {
     // open a file in appending mode (it won't be overwritten, but add to the existed text)
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)", ios::app);
     file << userData.login << ", " << userData.password << ", " << userData.fullname << ", " << userData.phoneNumber << ", " << userData.pesel << endl;
@@ -135,7 +137,7 @@ void saveHistory(const UserData& userData) {
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\historyOfVisits.txt)", ios::app);
     file << "Visit history of " << userData.login << ":\n";
     // create a loop with iteration over each element in user's visits (doctor, time, problem)
-    for (auto& visit : userData.visits) { // variable with auto type to automatically choose variable type
+    for (const Visit& visit : userData.visits) {
         file << "Doctor: " << visit.doctorname << " | Time: " << visit.time << " | Problem: " << visit.problem << endl;
     }
     file << "-----------------------------------------------\n";
@@ -160,21 +162,21 @@ void showHistory(string& login){
     file.close();
 }
 
-void scheduleVisit(UserData& userData, const Doctor& fahrenheit, const Doctor& somebodies, const Doctor& nowak) {
+void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, Doctor& nowak) {
     string userCase;
     Doctor doctorInfo;
     cout << "Available hours for Dr. " << fahrenheit.fullname << ": ";
-    for (auto& time : fahrenheit.time) { // printing a timetable of doctor's hours
+    for (string& time : fahrenheit.time) { // printing a timetable of doctor's hours
         cout << time << " ";
     }
     cout << endl;
     cout << "Available hours for Dr. " << somebodies.fullname << ": ";
-    for (auto& time : somebodies.time) {
+    for (string& time : somebodies.time) {
         cout << time << " ";
     }
     cout << endl;
     cout << "Available hours for Dr. " << nowak.fullname << ": ";
-    for (auto& time : nowak.time) {
+    for (string& time : nowak.time) {
         cout << time << " ";
     }
     cout << endl;
@@ -204,6 +206,7 @@ void scheduleVisit(UserData& userData, const Doctor& fahrenheit, const Doctor& s
         userData.visits.push_back(visit); // push the info about user's visit to the vector
         cout << "Appointment scheduled with Dr. " << doctorInfo.fullname << " at " << userCase << endl;
         saveHistory(userData);
+        doctorInfo.time.remove(userCase);
     } else {
         cout << "Time is not found for any doctor. Please make sure you entered a valid time\n";
     }
@@ -271,10 +274,10 @@ void showInfo(const string& login, const string& password) {
 
         while (getline(file, line)) {
             if (line.find(login) != string::npos && line.find(password) != string::npos) {
-                // Find the line with the user's login and password
+                // find the line with the user's login and password
                 row.clear();
-                istringstream s(line);
-                while (getline(s, word, ','))
+                istringstream s(line); // read and break a line on individual words
+                while (getline(s, word, ',')) // add the words separated by comma into a vector
                     row.push_back(word);
 
                 cout << "Login: " << row[0] << "\n"
