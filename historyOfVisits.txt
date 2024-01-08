@@ -1,9 +1,9 @@
-Visit history of admin:
-Doctor: K. Nowak | Time: 18:00 | Problem: lsl
------------------------------------------------
 Visit history of a:
 Doctor: M. Somebodies | Time: 12:15 | Problem: admin wants to eat
 -----------------------------------------------
 Visit history of admin:
 Doctor: K. Nowak | Time: 18:00 | Problem: i want
+-----------------------------------------------
+Visit history of admin:
+Doctor: K. Nowak | Time: 9:10 | Problem: 11
 -----------------------------------------------

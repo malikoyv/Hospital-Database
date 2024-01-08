@@ -97,9 +97,8 @@ bool checkLogin(string& login) {
     string line;
     bool found = false;
     while (getline(file, line)) {
-        if (line.find(login) != string::npos) {
-            // find a line with login until the end of the file
-            found = true;
+        if (line.find(login) != string::npos) { // npos means a position that wasn't found
+            found = true; // find a line with login until the end of the file
             break;
         }
     }
@@ -164,49 +163,68 @@ void showHistory(string& login){
 
 void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, Doctor& nowak) {
     string userCase;
-    Doctor doctorInfo;
-    cout << "Available hours for Dr. " << fahrenheit.fullname << ": ";
-    for (string& time : fahrenheit.time) { // printing a timetable of doctor's hours
-        cout << time << " ";
-    }
-    cout << endl;
-    cout << "Available hours for Dr. " << somebodies.fullname << ": ";
-    for (string& time : somebodies.time) {
-        cout << time << " ";
-    }
-    cout << endl;
-    cout << "Available hours for Dr. " << nowak.fullname << ": ";
-    for (string& time : nowak.time) {
-        cout << time << " ";
-    }
-    cout << endl;
-    cout << "Choose a time (hh:mm): ";
-    cin.ignore();
-    getline(cin, userCase);
+    Doctor* doctorInfo; // add pointer to reflect the changes in the original doctor instances
     bool timeFound = false;
-    if (find(begin(fahrenheit.time), end(fahrenheit.time), userCase) != end(fahrenheit.time)) {
-        // find a time until iterator "find" won't come to the end iterator of the vector
-        doctorInfo = fahrenheit;
-        timeFound = true;
-    } else if (find(begin(somebodies.time), end(somebodies.time), userCase) != end(somebodies.time)) {
-        doctorInfo = somebodies;
-        timeFound = true;
-    } else if (find(begin(nowak.time), end(nowak.time), userCase) != end(nowak.time)) {
-        doctorInfo = nowak;
-        timeFound = true;
-    }
+    bool found;
+    do {
+        found = false;
+        cout << "Available hours for Dr. " << fahrenheit.fullname << ": ";
+        for (string& time : fahrenheit.time) { // print a timetable of doctor's hours
+        cout << time << " ";
+        }
+        cout << endl;
+        cout << "Available hours for Dr. " << somebodies.fullname << ": ";
+        for (string& time : somebodies.time) {
+            cout << time << " ";
+        }
+        cout << endl;
+        cout << "Available hours for Dr. " << nowak.fullname << ": ";
+        for (string& time : nowak.time) {
+            cout << time << " ";
+        }
+        cout << endl;
+        cout << "Choose a time (hh:mm): ";
+        cin.ignore();
+        getline(cin, userCase);
+        if (find(begin(fahrenheit.time), end(fahrenheit.time), userCase) != end(fahrenheit.time)) {
+            // find a time until iterator "find" won't come to the end iterator of the vector
+            doctorInfo = &fahrenheit;
+            timeFound = true;
+        } else if (find(begin(somebodies.time), end(somebodies.time), userCase) != end(somebodies.time)) {
+            doctorInfo = &somebodies;
+            timeFound = true;
+        } else if (find(begin(nowak.time), end(nowak.time), userCase) != end(nowak.time)) {
+            doctorInfo = &nowak;
+            timeFound = true;
+        }
+        file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\historyOfVisits.txt)");
+        string line;
+
+        while (getline(file, line)) {
+            if (line.find(userCase) != string::npos) {
+                found = true;
+                break;
+            }
+        }
+        file.close();
+
+        if (found){
+            cout << "This time is busy. Sorry :(" << endl;
+            doctorInfo->time.remove(userCase);
+        }
+    } while (found);
 
     cout << "Write shortly reason of visit: ";
     Visit visit;
     getline(cin, visit.problem);
 
     if (timeFound) {
-        visit.doctorname = doctorInfo.fullname;
+        visit.doctorname = doctorInfo->fullname;
         visit.time = userCase;
         userData.visits.push_back(visit); // push the info about user's visit to the vector
-        cout << "Appointment scheduled with Dr. " << doctorInfo.fullname << " at " << userCase << endl;
+        cout << "Appointment scheduled with Dr. " << visit.doctorname << " at " << userCase << endl;
         saveHistory(userData);
-        doctorInfo.time.remove(userCase);
+        doctorInfo->time.remove(visit.time); // remove from the list
     } else {
         cout << "Time is not found for any doctor. Please make sure you entered a valid time\n";
     }
