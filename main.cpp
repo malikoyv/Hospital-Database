@@ -18,8 +18,8 @@ struct UserData {
     string login;
     string password;
     string fullname;
-    int phoneNumber = 0;
-    long long pesel = 0;
+    string phoneNumber;
+    string pesel;
     vector<Visit> visits;
 };
 
@@ -31,6 +31,7 @@ struct Doctor{
 fstream file; // declare a file to read or/and write
 void logInSignUp(UserData& enterUser);
 void saveData(UserData& userData);
+void registration(UserData& newUser);
 bool checkData(string& login, string& password);
 bool checkLogin(string& login);
 void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, Doctor& nowak);
@@ -41,13 +42,10 @@ void saveHistory(UserData& userData);
 int main() {
     int userCase;
     UserData currentUser;
-    logInSignUp(currentUser);
-    list<string> fahrenheitTime = {"7:45", "8:15", "9:30"};
-    list<string> somebodiesTime = {"12:15", "14:00", "15:45"};
-    list<string> nowakTime = {"18:00", "19:10", "20:05"};
-    Doctor fahrenheit{"S. Fahreheit", fahrenheitTime}; // create an instance for doctors
-    Doctor somebodies{"M. Somebodies", somebodiesTime};
-    Doctor nowak{"K. Nowak", nowakTime};
+    logInSignUp(currentUser); // start a logging in or signing up system
+    Doctor fahrenheit{"S. Fahreheit", {"7:45", "8:15", "9:30"}}; // create an instance for doctors
+    Doctor somebodies{"M. Somebodies", {"12:15", "14:00", "15:45"}};
+    Doctor nowak{"K. Nowak", {"18:00", "19:10", "20:05"}};
 
     while (!cin.fail()) {
         cout << "\nWhat do you want to do?\n"
@@ -73,7 +71,6 @@ int main() {
                 return 0;
         }
     }
-
     return 0;
 }
 
@@ -97,7 +94,7 @@ bool checkLogin(string& login) {
     string line;
     bool found = false;
     while (getline(file, line)) {
-        if (line.find(login) != string::npos) { // npos means a position that wasn't found
+        if (line.find(login + ", ") == 0 && line.find(login) != string::npos) { // npos means a position that wasn't found and 0 means on the beginning of the line
             found = true; // find a line with login until the end of the file
             break;
         }
@@ -118,18 +115,26 @@ void registration(UserData& newUser) {
     cout << "Write your new login: ";
     cin >> newUser.login;
     while (checkLogin(newUser.login)) {
-        cout << "This login already exists!" << endl;
+        cout << "This login already exists!\nType another one: " << endl;
         cin >> newUser.login;
     }
     cout << "Write your new password: ";
     cin >> newUser.password;
     cout << "Write your fullname: ";
-    cin.ignore(); // clear a cache of cins
+    cin.ignore(); // clear a cache of inputs
     getline(cin, newUser.fullname);
-    cout << "Write your phone number (without country code): ";
-    cin >> newUser.phoneNumber;
-    cout << "Write your PESEL: ";
-    cin >> newUser.pesel;
+    do {
+        cout << "Write your phone number (without country code): ";
+        getline(cin, newUser.phoneNumber);
+        if (newUser.phoneNumber.length() != 9 || cin.fail()) cout << "Write the correct phone number!" << endl;
+        else break;
+    } while(newUser.phoneNumber.length() != 9);
+    do {
+        cout << "Write your PESEL: ";
+        getline(cin, newUser.pesel);
+        if (newUser.pesel.length() != 11 || cin.fail()) cout << "Write the correct PESEL!" << endl;
+        else break;
+    } while (newUser.pesel.length() != 11);
 }
 
 void saveHistory(UserData& userData) {
