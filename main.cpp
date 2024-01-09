@@ -34,9 +34,9 @@ void saveData(UserData& userData);
 bool checkData(string& login, string& password);
 bool checkLogin(string& login);
 void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, Doctor& nowak);
-void showInfo(const string& login, const string& password);
+void showInfo(string& login, string& password);
 void showHistory(string& login);
-void saveHistory(const UserData& userData);
+void saveHistory(UserData& userData);
 
 int main() {
     int userCase;
@@ -45,7 +45,7 @@ int main() {
     list<string> fahrenheitTime = {"7:45", "8:15", "9:30"};
     list<string> somebodiesTime = {"12:15", "14:00", "15:45"};
     list<string> nowakTime = {"18:00", "19:10", "20:05"};
-    Doctor fahrenheit{"S. Fahreheit", fahrenheitTime}; // creating an instance for doctor
+    Doctor fahrenheit{"S. Fahreheit", fahrenheitTime}; // create an instance for doctors
     Doctor somebodies{"M. Somebodies", somebodiesTime};
     Doctor nowak{"K. Nowak", nowakTime};
 
@@ -83,7 +83,7 @@ bool checkData(string& login, string& password) { // create a function with the 
     bool found = false;
     while (getline(file, line)) {
         // check if the line starts with the correct login and password
-        if (line.find(login + ", " + password) == 0) { // find login and password on the beginning of the line
+        if (line.find(login + ", " + password + ", ") == 0) { // find login and password on the beginning of the line
             found = true;
             break;
         }
@@ -132,11 +132,11 @@ void registration(UserData& newUser) {
     cin >> newUser.pesel;
 }
 
-void saveHistory(const UserData& userData) {
+void saveHistory(UserData& userData) {
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\historyOfVisits.txt)", ios::app);
     file << "Visit history of " << userData.login << ":\n";
     // create a loop with iteration over each element in user's visits (doctor, time, problem)
-    for (const Visit& visit : userData.visits) {
+    for (Visit& visit : userData.visits) {
         file << "Doctor: " << visit.doctorname << " | Time: " << visit.time << " | Problem: " << visit.problem << endl;
     }
     file << "-----------------------------------------------\n";
@@ -202,6 +202,7 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
 
         while (getline(file, line)) {
             if (line.find(userCase) != string::npos) {
+                // find a line with existed time in history of visits
                 found = true;
                 break;
             }
@@ -210,6 +211,7 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
 
         if (found){
             cout << "This time is busy. Sorry :(" << endl;
+            // remove from the list existed time and start new iteration
             doctorInfo->time.remove(userCase);
         }
     } while (found);
@@ -267,12 +269,10 @@ void logInSignUp(UserData& enterUser) {
     }
 }
 
-void showInfo(const string& login, const string& password) {
+void showInfo(string& login, string& password) {
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)");
-
     vector<string> row;
     string line, word, temp;
-
     bool found = false;
 
     while (getline(file, line)) {
