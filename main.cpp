@@ -189,8 +189,8 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
         }
         cout << endl;
         cout << "Choose a time (hh:mm): ";
-        cin.ignore();
-        getline(cin, userCase);
+        cin >> userCase; // read a user's inputted time
+        cin.ignore(); // clear the newline character
         if (find(begin(fahrenheit.time), end(fahrenheit.time), userCase) != end(fahrenheit.time)) {
             // find a time until iterator "find" won't come to the end iterator of the vector
             doctorInfo = &fahrenheit;
@@ -221,11 +221,10 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
         }
     } while (found);
 
-    cout << "Write shortly reason of visit: ";
-    Visit visit;
-    getline(cin, visit.problem);
-
     if (timeFound) {
+        cout << "Write shortly reason of visit: ";
+        Visit visit;
+        getline(cin, visit.problem);
         visit.doctorname = doctorInfo->fullname;
         visit.time = userCase;
         userData.visits.push_back(visit); // push the info about user's visit to the vector
