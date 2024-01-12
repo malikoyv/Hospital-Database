@@ -42,7 +42,7 @@ void saveHistory(UserData& userData);
 int main() {
     int userCase;
     UserData currentUser;
-    logInSignUp(currentUser); // start a logging in or signing up system
+    logInSignUp(currentUser); // start logging in or signing up
     Doctor fahrenheit{"S. Fahreheit", {"7:45", "8:15", "9:30"}}; // create an instance for doctors
     Doctor somebodies{"M. Somebodies", {"12:15", "14:00", "15:45"}};
     Doctor nowak{"K. Nowak", {"18:00", "19:10", "20:05"}};
@@ -104,7 +104,7 @@ bool checkLogin(string& login) {
 }
 
 void saveData(UserData& userData) {
-    // open a file in appending mode (it won't be overwritten, but add to the existed text)
+    // open a file in append mode (it won't be overwritten, but add to the existed text)
     file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)", ios::app);
     file << userData.login << ", " << userData.password << ", " << userData.fullname << ", " << userData.phoneNumber << ", " << userData.pesel << endl;
     file.close();
@@ -172,20 +172,55 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
     bool timeFound = false;
     bool found;
     do {
+        file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\historyOfVisits.txt)");
+        string line;
         found = false;
         cout << "Available hours for Dr. " << fahrenheit.fullname << ": ";
         for (string& time : fahrenheit.time) { // print a timetable of doctor's hours
-        cout << time << " ";
+            bool isInFile = false;
+            while (getline(file, line)) {
+                if (line.find(time) != string::npos) { // find a time which exists in the file
+                    isInFile = true;
+                    break;
+                }
+            }
+            file.clear(); // clear the end-of-file flag
+            file.seekg(0, ios::beg); // move the file pointer to the beginning
+            if (!isInFile) {
+                cout << time << " "; // print a time which doesn't appear in the file
+            }
         }
         cout << endl;
         cout << "Available hours for Dr. " << somebodies.fullname << ": ";
         for (string& time : somebodies.time) {
-            cout << time << " ";
+            bool isInFile = false;
+            while (getline(file, line)) {
+                if (line.find(time) != string::npos) { // find a time which exists in the file
+                    isInFile = true;
+                    break;
+                }
+            }
+            file.clear(); // clear the end-of-file flag
+            file.seekg(0, ios::beg); // move the file pointer to the beginning
+            if (!isInFile) {
+                cout << time << " "; // print a time which doesn't appear in the file
+            }
         }
         cout << endl;
         cout << "Available hours for Dr. " << nowak.fullname << ": ";
         for (string& time : nowak.time) {
-            cout << time << " ";
+            bool isInFile = false;
+            while (getline(file, line)) {
+                if (line.find(time) != string::npos) { // find a time which exists in the file
+                    isInFile = true;
+                    break;
+                }
+            }
+            file.clear(); // clear the end-of-file flag
+            file.seekg(0, ios::beg); // move the file pointer to the beginning
+            if (!isInFile) {
+                cout << time << " "; // print a time which doesn't appear in the file
+            }
         }
         cout << endl;
         cout << "Choose a time (hh:mm): ";
@@ -202,9 +237,6 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
             doctorInfo = &nowak;
             timeFound = true;
         }
-        file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\historyOfVisits.txt)");
-        string line;
-
         while (getline(file, line)) {
             if (line.find(userCase) != string::npos) {
                 // find a line with existed time in history of visits
@@ -213,14 +245,12 @@ void scheduleVisit(UserData& userData, Doctor& fahrenheit, Doctor& somebodies, D
             }
         }
         file.close();
-
         if (found){
             cout << "This time is busy. Sorry :(" << endl;
-            // remove from the list existed time and start new iteration
+            // remove from the list existing time and start new iteration
             doctorInfo->time.remove(userCase);
         }
     } while (found);
-
     if (timeFound) {
         cout << "Write shortly reason of visit: ";
         Visit visit;
@@ -278,7 +308,6 @@ void showInfo(string& login, string& password) {
     vector<string> row;
     string line, word, temp;
     bool found = false;
-
     while (getline(file, line)) {
         if (line.find(login) != string::npos && line.find(password) != string::npos) {
             // Find the line with the user's login and password
@@ -286,14 +315,10 @@ void showInfo(string& login, string& password) {
             break;
         }
     }
-
     file.close();
-
     if (found) {
         cout << "User Information:\n";
-
         file.open(R"(C:\Users\migga\Documents\PJATK\! Clinic database\database.txt)");
-
         while (getline(file, line)) {
             if (line.find(login) != string::npos && line.find(password) != string::npos) {
                 // find the line with the user's login and password
@@ -301,7 +326,6 @@ void showInfo(string& login, string& password) {
                 istringstream s(line); // read and break a line on individual words
                 while (getline(s, word, ',')) // add the words separated by comma into a vector
                     row.push_back(word);
-
                 cout << "Login: " << row[0] << "\n"
                      << "Full Name: " << row[2] << "\n"
                      << "Phone Number: " << row[3] << "\n"
@@ -309,7 +333,6 @@ void showInfo(string& login, string& password) {
                 break;
             }
         }
-
         file.close();
     } else {
         cout << "User not found.\n";

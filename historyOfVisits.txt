@@ -5,5 +5,5 @@ Visit history of admin:
 Doctor: K. Nowak | Time: 18:00 | Problem: i want
 -----------------------------------------------
 Visit history of admin:
-Doctor: K. Nowak | Time: 19:10 | Problem: aaa
+Doctor: K. Nowak | Time: 19:10 | Problem: idk
 -----------------------------------------------
