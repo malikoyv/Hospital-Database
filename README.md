@@ -1,13 +1,15 @@
 # Hospital Database
-This project was created for the end of the semester at my university.
-The paths (database.txt && historyOfVisits.txt) were set on my PC, so you will need to change it (even ruthlessly).
+Welcome to the Hospital Database project, designed for the culmination of the semester at my university. This robust system facilitates efficient management of patient data and visit histories.
+
 ## Setup
-1. Download files from the repository.
-2. Install and/or open your IDE or text editor (Word is the best IDE btw).
-3. Change the paths in the code on your own.
-4. Run the project in an external console.
-## How to use
-1. Start by choosing an option "log in" or "sign up".
-2. You can view your information, schedule a doctor visit, see your visit history, or quit the program using any character except numbers (1-3).
-3. In the visit schedule, you can choose a time you like, and the program will automatically find a doctor available at that time (if the time exists, it will be deleted in the next iteration).
-## Thank you for your interest and good use!
+**1. Download Files:** Obtain the project files from the repository.\
+**2. Configure Paths:** Open the project in your preferred IDE or text editor. Adjust the file paths in the code to suit your system configuration.\
+**3. Run the Project:** Execute the project in an external console environment.
+
+## How to Use
+**1. Login or Sign Up:** Begin by selecting either "log in" or "sign up" to access the system.\
+**2. Explore Options:** Navigate through various functionalities such as viewing personal information, scheduling doctor visits, accessing visit history, or exiting the program. Use any character except numbers (1-3) for navigation.\
+**3. Schedule Doctor Visit:** When scheduling a visit, choose your preferred time. The system automatically matches you with an available doctor for that slot. If the time slot is unavailable, it will be removed in subsequent iterations.
+
+## Thank You!
+Thank you for your interest in our Hospital Database project. We trust it will serve you well in efficiently managing patient data and visit schedules. Enjoy using it!
