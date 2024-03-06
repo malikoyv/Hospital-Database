@@ -2,7 +2,8 @@
 Welcome to the Hospital Database project, designed for the culmination of the semester at my university. This robust system facilitates efficient management of patient data and visit histories.
 
 ## Setup
-**1. Download Files:** Obtain the project files from the repository.\
+**1. Clone this repository:** \
+`git clone https://github.com/malikoyv/Hospital-Database`
 **2. Configure Paths:** Open the project in your preferred IDE or text editor. Adjust the file paths in the code to suit your system configuration.\
 **3. Run the Project:** Execute the project in an external console environment.
 
